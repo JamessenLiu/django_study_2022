@@ -1,0 +1,16 @@
+__pycache__
+__pycache__/
+__pycache__/*
+*/__pycache__
+*/__pycache__/
+*/__pycache__/*
+logs/*
+*.pyc
+venv
+MYVENV
+MYVENV/
+MYVENV/*
+.idea
+.idea/
+.idea/*
+.vscode/
