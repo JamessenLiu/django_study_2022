@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from apps.users.views import get_userinfo, get_users, UsersView, UserLoginView
+from apps.users.views import get_userinfo, get_users, UsersView, UserLoginView, UserArticleView, AticleView
 
 
 urlpatterns = [
@@ -24,4 +24,6 @@ urlpatterns = [
     # path('api/users', get_users),
     path('api/users', UsersView.as_view()),
     path('api/login', UserLoginView.as_view()),
+    path('api/users/<int:user_id>/articles', UserArticleView.as_view()),
+    path('api/articles', AticleView.as_view())
 ]

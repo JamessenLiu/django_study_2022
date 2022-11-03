@@ -1,10 +1,11 @@
 from django.contrib import admin
-from apps.users.models import Users
+from apps.users.models import Users, Article
 from django.contrib.auth.models import User, Group
 
 # admin.site.register(Users)
 admin.site.unregister(User)
 admin.site.unregister(Group)
+admin.site.register(Article)
 
 
 @admin.register(Users)

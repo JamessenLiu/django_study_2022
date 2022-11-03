@@ -27,3 +27,13 @@ class Users(BaseModel):
         db_table = 'users'
         verbose_name = 'users'
         verbose_name_plural = 'users'
+
+
+
+class Article(BaseModel):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    user = models.ForeignKey(Users, related_name='user_articles', on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'articles'

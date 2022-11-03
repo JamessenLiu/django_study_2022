@@ -212,3 +212,22 @@ REST_FRAMEWORK = {
         'apps.utils.auth.JWTAuthentication',
     ),
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@localhost:32769/0",
+                   # redis://:password@bundlev2redis:6379/1
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://:@localhost:32769/1",
+        # redis://:password@bundlev2redis:6379/1
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}

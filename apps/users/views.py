@@ -1,6 +1,8 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from apps.users.models import Users
+from rest_framework.decorators import authentication_classes
+
+from apps.users.models import Users, Article
 from apps.users.serializers import CreateUserSerializer, UserModelSerializer
 
 
@@ -92,11 +94,29 @@ import time
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache, caches
 
 
+# 声明式缓存，通过装饰器缓存请求
+# @method_decorator(decorator=cache_page(timeout=600), name='get')
 class UsersView(APIView):
+    authentication_classes = ()
 
     def get(self, request):
+        if cache.get('user_data'):
+            user_data = cache.get('user_data')
+            return Response({
+                "code": 200,
+                'message': 'success',
+                'data': {
+                    'list': user_data,
+                    "pagination": {
+                        "total_count": len(user_data),
+                    }
+                }
+            })
         email_query = request.GET.get('email') # tom
         offset = request.GET.get('offset', 0)
         limit = request.GET.get('limit', 10)
@@ -114,6 +134,13 @@ class UsersView(APIView):
         #     "last_name": user.last_name,
         #     "email": user.email,
         # }, _users)
+
+        cache.set('user_data', user_data, timeout=600)
+
+        # _data = cache.get('user_data')
+        # print(_data)
+        # my_cache = caches['session']
+        # my_cache.set('user_data', user_data)
 
         return Response({
             "code": 200,
@@ -153,6 +180,8 @@ class UsersView(APIView):
             gender=user_data['gender']
         )
 
+        cache.delete('user_data')
+
         # 创建用户
         return JsonResponse({'code': 200, 'message': 'success', "data": {
             "userId": user.id
@@ -188,3 +217,38 @@ class UserLoginView(APIView):
                 'token': token
             }
         })
+
+
+class UserArticleView(APIView):
+    authentication_classes = ()
+
+    def get(self, request, user_id):
+        user = Users.objects.filter(pk=user_id).first()
+        if not user:
+            return Response({"code": "404", "message": "user not exists"})
+
+        user_articles = user.user_articles.all()
+
+        # articles = Article.objects.filter(user__id=user_id)
+
+        return Response([
+            {
+                "article_title": article.title
+            } for article in user_articles
+        ])
+
+
+class AticleView(APIView):
+
+    authentication_classes = ()
+
+    def get(self, request):
+
+        articles = Article.objects.all().prefetch_related('user')
+
+        return Response([
+            {
+                "article_title": article.title,
+                "article_user": article.user.email,
+            } for article in articles
+        ])
