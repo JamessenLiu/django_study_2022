@@ -8,4 +8,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY . .
 
 CMD python3 manage.py migrate --settings django_study.dev \
-    && uwsgi -w config.wsgi --http :8000 -p4 --env DJANGO_SETTINGS_MODULE=django_study.dev start \
+    && uwsgi -w django_study.wsgi -s :8000 --env DJANGO_SETTINGS_MODULE=django_study.dev --processes=4

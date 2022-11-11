@@ -30,6 +30,6 @@ services:
       - "48000:8000"
 
     depends_on:
-      - db
+      - pgdb
 volumes:
   postgres_data:
