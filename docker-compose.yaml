@@ -1,0 +1,35 @@
+version: '2'
+services:
+  pgdb:
+    container_name: dj-study-db
+    image: 'postgres:11.4'
+    environment:
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: 'Asia/Shanghai'
+    restart: always
+    volumes:
+      - './data.sql:/docker-entrypoint-initdb.d/init.sql'
+      - 'postgres_data:/var/lib/postgresql/data/pgdata'
+    ports:
+      - "45433:5432"
+  redisdb:
+    restart: always
+    image: redis:5.0.0
+    container_name: dj-redis-db
+    command: redis-server --requirepass password
+    ports:
+      - "46379:6379"
+  dj-study:
+    container_name: python-3.6
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "48000:8000"
+
+    depends_on:
+      - db
+volumes:
+  postgres_data:
