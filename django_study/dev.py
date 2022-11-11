@@ -16,7 +16,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:@redisdb:6379/0",
+        "LOCATION": "redis://:password@redisdb:6379/0",
         # redis://:password@bundlev2redis:6379/1
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
@@ -24,7 +24,7 @@ CACHES = {
     },
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://:@redisdb:6379/1",
+        "LOCATION": "redis://:password@redisdb:6379/1",
         # redis://:password@bundlev2redis:6379/1
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
