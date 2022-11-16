@@ -105,27 +105,41 @@ class UsersView(APIView):
     authentication_classes = ()
 
     def get(self, request):
-        if cache.get('user_data'):
-            user_data = cache.get('user_data')
-            return Response({
-                "code": 200,
-                'message': 'success',
-                'data': {
-                    'list': user_data,
-                    "pagination": {
-                        "total_count": len(user_data),
-                    }
-                }
-            })
-        email_query = request.GET.get('email') # tom
+        # if cache.get('user_data'):
+        #     user_data = cache.get('user_data')
+        #     return Response({
+        #         "code": 200,
+        #         'message': 'success',
+        #         'data': {
+        #             'list': user_data,
+        #             "pagination": {
+        #                 "total_count": len(user_data),
+        #             }
+        #         }
+        #     })
+        email_query = request.GET.get('email', "") # tom
+        first_name = request.GET.get('first_name', "")
         offset = request.GET.get('offset', 0)
         limit = request.GET.get('limit', 10)
-        users = Users.objects.filter(
-            # email__endswith=email_query
-            gender__in=[0, 2]
-        )
+        # users = Users.objects.filter(
+        #     # email__endswith=email_query
+        #     gender__in=[0, 2]
+        # )
+
+        # users = Users.objects.filter(
+        #     email__icontains=email_query
+        # )
+        # users = Users.objects.filter(
+        #     email__icontains=email_query,
+        #     first_name__icontains=first_name
+        # )
+
+        # users = Users.objects.get_user_by_email(email_query)
+        user_query_set = Users.objects.get_queryset()
+        users = Users.objects.get_queryset().query_user_by_email(email_query).query_user_by_first_name(first_name)
+
         total_count = users.count()
-        _users = users[offset:offset + limit]
+        _users = users.get_user_page_info(offset, limit)
 
         user_data = UserModelSerializer(_users, many=True).data
         # user_data = map(lambda user: {
@@ -135,7 +149,7 @@ class UsersView(APIView):
         #     "email": user.email,
         # }, _users)
 
-        cache.set('user_data', user_data, timeout=600)
+        # cache.set('user_data', user_data, timeout=600)
 
         # _data = cache.get('user_data')
         # print(_data)
@@ -252,3 +266,14 @@ class AticleView(APIView):
                 "article_user": article.user.email,
             } for article in articles
         ])
+
+
+class UsersExportView(APIView):
+    authentication_classes = ()
+
+    def get(self, request):
+        from apps.tasks.async_tasks import export_users
+        export_users.delay()
+        # start celery: celery -A apps.tasks.task worker -Q default--loglevel=debug
+        # export_users()
+        return Response({'code': 200})
