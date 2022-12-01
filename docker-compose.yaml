@@ -26,6 +26,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
+    env_file:
+      - .env
     ports:
       - "48000:8000"
 

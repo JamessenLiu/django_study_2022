@@ -1,14 +1,15 @@
 from .settings import *
+import os
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'django_study',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'pgdb',
-        'PORT': 5432,
+        'USER': os.environ['DATABASE_NAME'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'HOST': os.environ['DATABASE_HOST'],
+        'PORT': int(os.environ['DATABASE_PORT']),
         'TIMEZONE': 'UTC'
     }
 }
